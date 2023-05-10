@@ -1,0 +1,169 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int comparisons = 0;
+
+void merge(int array[], int left, int mid, int right)
+{
+    int arr1Size = mid - left + 1;
+    int arr2Size = right - mid;
+
+    int *leftArray = new int[arr1Size];
+    int *rightArray = new int[arr2Size];
+
+    for (int i = 0; i < arr1Size; i++)
+        leftArray[i] = array[left + i];
+    for (int j = 0; j < arr2Size; j++)
+        rightArray[j] = array[mid + 1 + j];
+
+    int ixArr1 = 0, ixArr2 = 0;
+    int indexOfMergedArray = left;
+
+    while (ixArr1 < arr1Size && ixArr2 < arr2Size)
+    {
+        if (leftArray[ixArr1] <= rightArray[ixArr2])
+        {
+            array[indexOfMergedArray] = leftArray[ixArr1];
+            ixArr1++;
+        }
+        else
+        {
+            array[indexOfMergedArray] = rightArray[ixArr2];
+            ixArr2++;
+        }
+        indexOfMergedArray++;
+        comparisons++;
+    }
+
+    while (ixArr1 < arr1Size)
+    {
+        array[indexOfMergedArray] = leftArray[ixArr1];
+        ixArr1++;
+        indexOfMergedArray++;
+    }
+
+    while (ixArr2 < arr2Size)
+    {
+        array[indexOfMergedArray] = rightArray[ixArr2];
+        ixArr2++;
+        indexOfMergedArray++;
+    }
+
+    return;
+}
+
+void mergeSort(int array[], int const begin, int const end)
+{
+    if (begin >= end)
+        return;
+
+    int mid = begin + (end - begin) / 2;
+    mergeSort(array, begin, mid);
+    mergeSort(array, mid + 1, end);
+    merge(array, begin, mid, end);
+}
+
+void create_random_array(int arr[], int size, int Case=2)
+{
+    switch (Case)
+    {
+    case 1://Best Case
+    {
+        int start = rand()%100+1;
+        arr[0] =start;
+        for (int i = 1; i<size; arr[i++] = ++start);    
+        break;
+    }
+    case 2://AvgCase
+    {
+        for (int i = 0; i < size; i++)
+        {
+            arr[i] = rand() % 100 + 1;
+        }   
+        break;
+    }
+    case 3://Worst Case
+    {
+        int tmp = rand()%100+30;
+        arr[0] =tmp;
+        for (int i = 1; i<size; arr[i++] = --tmp);    
+        break;
+    }
+    default:
+        break;
+    }
+    
+}
+
+void avg_case(int n, int min_size, int max_size)
+{
+    int intrvl = (max_size - min_size) / n;
+    int count = 0;
+
+    ofstream fout;
+    fout.open("merge_sort_avg.csv", ios::out);
+
+    fout << "Size, No. of Comparisons\n";
+    for (int size = min_size; count < n; count++, size += intrvl)
+    {
+        int *arr = new int[size];
+        create_random_array(arr, size);
+        mergeSort(arr, 0, size - 1);
+
+        fout << size << ", " << comparisons << "\n";
+        comparisons = 0;
+    }
+    fout.close();
+}
+
+
+void best_case(int n, int min_size, int max_size)
+{
+    int intrvl = (max_size - min_size) / n;
+    int count = 0;
+
+    ofstream fout;
+    fout.open("merge_sort_best.csv", ios::out);
+
+    fout << "Size, No. of Comparisons\n";
+    for (int size = min_size; count < n; count++, size += intrvl)
+    {
+        int *arr = new int[size];
+        create_random_array(arr, size,1);
+        mergeSort(arr, 0, size - 1);
+
+        fout << size << ", " << comparisons << "\n";
+        comparisons = 0;
+    }
+    fout.close();
+}
+void worst_case(int n, int min_size, int max_size)
+{
+    int intrvl = (max_size - min_size) / n;
+    int count = 0;
+
+    ofstream fout;
+    fout.open("merge_sort_worst.csv", ios::out);
+
+    fout << "Size, No. of Comparisons\n";
+    for (int size = min_size; count < n; count++, size += intrvl)
+    {
+        int *arr = new int[size];
+        create_random_array(arr, size,3);
+        mergeSort(arr, 0, size - 1);
+
+        fout << size << ", " << comparisons << "\n";
+        comparisons = 0;
+    }
+    fout.close();
+}
+
+int main()
+{
+    avg_case(100, 30, 600);
+    worst_case(100, 30, 200);
+    best_case(100, 30, 200);
+    return 0;
+}

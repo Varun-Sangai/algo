@@ -1,0 +1,120 @@
+#include<iostream>
+#include <algorithm>
+#include<fstream>
+using namespace std;
+
+void heap(int arr[], int n, int i, int &comp)
+{
+	int largest = i; 
+	int l = 2 * i + 1; 
+	int r = 2 * i + 2; 
+
+	if (l < n && (comp += 1) && (arr[l] > arr[largest]))
+    {
+        largest = l;
+    }
+
+	if (r < n && (comp += 1) && (arr[r] > arr[largest]))
+    {
+        largest = r;
+    }
+
+	if (largest != i) 
+    {
+        
+		swap(arr[i], arr[largest]);
+		heap(arr, n, largest, comp);
+	}
+}
+ 
+int heap_Sort(int arr[], int n, int &count)
+{
+	for (int i = n / 2 - 1; i >= 0; i--)
+    {
+        heap(arr, n, i, count);
+    }
+		
+	for (int i = n - 1; i > 0; i--) 
+    {
+		swap(arr[0], arr[i]);
+		heap(arr, i, 0, count);
+	}
+    return count;
+    
+}
+
+void generate_random_array(int arr[], int size)
+{
+        for (int i = 0; i < size; i++)
+        {
+            arr[i] = (rand() % 100);
+        }
+}
+
+void avg_case(int num_cases = 100, int min_size = 30, int max_size = 1000)
+{
+        int interval = (max_size - min_size) / num_cases;
+        int comp = 0;
+        for (int size = min_size, i = 0; i < num_cases; i++, size += interval)
+        {
+            int *Arr = new int[size];
+            generate_random_array(Arr, size);
+    
+            fstream fout1;
+            
+            heap_Sort(Arr,size,comp);
+    
+            fout1.open("AvgHeap.csv", ios::out | ios::app);
+    
+            fout1 << size << "," << comp << endl;
+            comp = 0;
+        }
+}
+
+void best_case(int num_cases = 20, int min_size = 30, int max_size = 1000)
+{
+        int interval = (max_size - min_size) / num_cases;
+        int comp = 0;
+        for (int size = min_size, i = 0; i < num_cases; i++, size += interval)
+        {
+            int *Arr = new int[size];
+            generate_random_array(Arr, size);
+            sort(Arr, Arr + size, greater<int>());
+            fstream fout1;
+            
+            heap_Sort(Arr,size,comp);
+    
+            fout1.open("BestHeap.csv", ios::out | ios::app);
+    
+            fout1 << size << "," << comp << endl;
+            comp = 0;
+        }
+}
+
+void worst_case(int num_cases = 20, int min_size = 30, int max_size = 1000)
+{
+        int interval = (max_size - min_size) / num_cases;
+        int comp = 0;
+        for (int size = min_size, i = 0; i < num_cases; i++, size += interval)
+        {
+            int *Arr = new int[size];
+            generate_random_array(Arr, size);
+            sort(Arr, Arr + size);
+            fstream fout1;
+            
+            heap_Sort(Arr,size,comp);
+    
+            fout1.open("WorstHeap.csv", ios::out | ios::app);
+    
+            fout1 << size << "," << comp << endl;
+            comp = 0;
+        }
+}
+
+int main()
+{
+    avg_case();
+    best_case();
+    worst_case();
+    return 0;
+}
